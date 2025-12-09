@@ -9,6 +9,7 @@ import '../../../models/user_profile.dart';
 import '../../../services/connectivity_service.dart';
 import '../../../services/local_storage_service.dart';
 import '../../../services/auto_sync_service.dart';
+import '../../../services/audio_service.dart';
 import '../../claims/claims_list_screen.dart';
 import '../../schemes/schemes_screen.dart';
 import '../../profile/presentation/profile_screen.dart';
@@ -19,6 +20,7 @@ import '../../../providers/language_provider.dart';
 import '../../../localization/app_localizations.dart';
 import '../../../widgets/language_selector_widget.dart';
 import '../../../widgets/wheat_field_background.dart';
+import '../../../widgets/audio_player_dialog.dart';
 import 'dart:ui';
 
 class DashboardScreen extends StatefulWidget {
@@ -267,6 +269,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
               pinned: true,
               backgroundColor: Colors.green.shade700.withOpacity(0.9),
               actions: [
+                // Audio Button (Top-Right) - Direct Play Button
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: Center(
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.headset_mic,
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                      tooltip: 'Play Audio',
+                      onPressed: _showAudioPlayer,
+                      splashRadius: 28,
+                    ),
+                  ),
+                ),
                 // Enhanced Language Selector
                 Padding(
                   padding: const EdgeInsets.only(right: 8),
@@ -1339,5 +1357,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
         );
       }
     }
+  }
+
+  /// Show Audio Player Dialog
+  /// Simple single audio file player
+  void _showAudioPlayer() {
+    final audioService = AudioService();
+    
+    showDialog(
+      context: context,
+      builder: (context) => SimpleAudioPlayer(audioService: audioService),
+    );
   }
 }
