@@ -14,6 +14,7 @@ import 'src/features/auth/data/services/auth_service.dart';
 import 'src/features/auth/presentation/providers/auth_provider.dart';
 import 'src/features/auth/domain/models/user_model.dart';
 import 'src/features/dashboard/presentation/dashboard_screen.dart';
+import 'src/features/dashboard/presentation/dashboard_selection_screen.dart';
 import 'src/features/officer/officer_dashboard_screen.dart';
 import 'src/features/camera/presentation/camera_screen.dart';
 import 'src/features/camera/presentation/enhanced_camera_screen.dart';
@@ -153,7 +154,7 @@ class ThemeProvider with ChangeNotifier {
 GoRouter _buildRouter(BuildContext context) {
   return GoRouter(
     refreshListenable: context.read<AuthProvider>(),
-    initialLocation: '/dashboard',
+    initialLocation: '/dashboard-selection',
     redirect: (BuildContext context, GoRouterState state) {
       // You can plug in actual auth logic later.
       return null;
@@ -181,6 +182,12 @@ GoRouter _buildRouter(BuildContext context) {
       GoRoute(
         path: '/register/officer',
         builder: (_, __) => const RegistrationScreen(),
+      ),
+
+      // DASHBOARD SELECTION
+      GoRoute(
+        path: '/dashboard-selection',
+        builder: (_, __) => const DashboardSelectionScreen(),
       ),
 
       // DASHBOARD
