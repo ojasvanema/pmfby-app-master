@@ -1,43 +1,56 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
+import 'package:just_audio/just_audio.dart';
 
-/// Simple Audio Service for single audio file playback
-/// Handles playing one audio file from assets
+/// Simple Audio Service for Dashboard - Play/Stop Toggle
 class AudioService extends ChangeNotifier {
+  late AudioPlayer _audioPlayer;
   bool _isPlaying = false;
-  Duration _currentPosition = Duration.zero;
-  Duration _totalDuration = Duration.zero;
-
-  bool get isPlaying => _isPlaying;
-  Duration get currentPosition => _currentPosition;
-  Duration get totalDuration => _totalDuration;
-
-  /// The single audio file path
-  /// Replace 'assets/audio/audio.mp3' with your actual audio file path
   static const String audioFilePath = 'assets/audio/audio.mp3';
 
-  /// Play the single audio file
-  Future<void> playAudio() async {
-    try {
-      // Load audio from assets
-      final audioData = await rootBundle.load(audioFilePath);
-      
-      // Start playback
-      _isPlaying = true;
-      _totalDuration = const Duration(seconds: 180); // 3 minutes default
-      
+  bool get isPlaying => _isPlaying;
+
+  AudioService() {
+    _audioPlayer = AudioPlayer();
+    _setupListeners();
+  }
+
+  void _setupListeners() {
+    _audioPlayer.playerStateStream.listen((playerState) {
+      _isPlaying = playerState.playing;
       notifyListeners();
-      
-      debugPrint('🎵 Playing audio from: $audioFilePath');
+    });
+  }
+
+  /// Toggle: Click to play, click again to stop
+  Future<void> toggleAudio() async {
+    try {
+      if (_isPlaying) {
+        // Stop if playing
+        await _audioPlayer.stop();
+        _isPlaying = false;
+        debugPrint('⏹️ Audio stopped');
+      } else {
+        // Play if stopped
+        await _audioPlayer.setAsset(audioFilePath);
+        await _audioPlayer.play();
+        _isPlaying = true;
+        debugPrint('▶️ Audio playing from: $audioFilePath');
+      }
+      notifyListeners();
     } catch (e) {
-      debugPrint('❌ Error playing audio: $e');
+      debugPrint('❌ Error toggling audio: $e');
       _isPlaying = false;
       notifyListeners();
+      rethrow;
     }
   }
 
-  /// Stop audio playback
-  void stopAudio() {
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
+  }
+}
     _isPlaying = false;
     _currentPosition = Duration.zero;
     notifyListeners();
